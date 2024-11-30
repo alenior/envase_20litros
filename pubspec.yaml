@@ -1,0 +1,13 @@
+name: envase_20litros
+description: Aplicação para gerenciamento de envase de garrafões de 20 litros.
+version: 1.0.0
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  mysql1: ^0.20.0
+  intl: ^0.18.0
+  provider: ^6.0.5
+  pdf: ^3.10.3
+  printing: ^5.10.0
