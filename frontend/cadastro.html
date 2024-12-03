@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Alternar entre formulários
+    function alternarFormulario(formulario) {
+      document.getElementById('formCliente').style.display = formulario === 'cliente' ? 'block' : 'none';
+      document.getElementById('formAtendimento').style.display = formulario === 'atendimento' ? 'block' : 'none';
+    }
+  </script>
+</head>
+<body>
+  <header>Envase 20 Litros</header>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="atendimentos.html">Atendimentos</a>
+  </nav>
+  <div class="container">
+    <h1>Cadastro</h1>
+    <div>
+      <button onclick="alternarFormulario('cliente')">Cadastrar Cliente</button>
+      <button onclick="alternarFormulario('atendimento')">Cadastrar Atendimento</button>
+    </div>
+    <!-- Formulário para cadastrar clientes -->
+    <form id="formCliente" style="display: none;" action="/clientes" method="post">
+      <h2>Novo Cliente</h2>
+      <label for="nomeCliente">Nome:</label>
+      <input type="text" id="nomeCliente" name="nome" required>
+      <label for="enderecoCliente">Endereço:</label>
+      <input type="text" id="enderecoCliente" name="endereco" required>
+      <label for="contatoCliente">Contato:</label>
+      <input type="text" id="contatoCliente" name="contato" required>
+      <label for="observacoesCliente">Observações:</label>
+      <textarea id="observacoesCliente" name="observacoes"></textarea>
+      <button type="submit">Salvar Cliente</button>
+    </form>
+    <!-- Formulário para cadastrar atendimentos -->
+    <form id="formAtendimento" style="display: none;" action="/atendimentos" method="post">
+      <h2>Novo Atendimento</h2>
+      <label for="clienteAtendimento">Cliente:</label>
+      <select id="clienteAtendimento" name="cliente" required>
+        <!-- Opções carregadas dinamicamente -->
+      </select>
+      <label for="quantidadeAtendimento">Quantidade:</label>
+      <input type="number" id="quantidadeAtendimento" name="quantidade" required>
+      <label for="dataAtendimento">Data:</label>
+      <input type="date" id="dataAtendimento" name="data" value="<?php echo date('Y-m-d'); ?>" required>
+      <label for="observacaoAtendimento">Observação:</label>
+      <textarea id="observacaoAtendimento" name="observacao"></textarea>
+      <button type="submit">Salvar Atendimento</button>
+    </form>
+  </div>
+</body>
+</html>

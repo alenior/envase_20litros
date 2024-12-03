@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atendimentos</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/scripts.js" defer></script>
+</head>
+<body>
+  <header>Envase 20 Litros</header>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="cadastro.html">Novo Cadastro</a>
+  </nav>
+  <div class="container">
+    <h1>Atendimentos</h1>
+    <div>
+      <input type="text" id="filtroAtendimentoNome" placeholder="Filtrar por nome do cliente" onkeyup="filtrarAtendimentos()">
+      <input type="date" id="filtroAtendimentoData" placeholder="Filtrar por data" onchange="filtrarAtendimentos()">
+    </div>
+    <table id="tabelaAtendimentos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Data</th>
+          <th>Quantidade</th>
+          <th>Observação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados carregados dinamicamente -->
+      </tbody>
+    </table>
+    <button onclick="exportarPDF('tabelaAtendimentos', 'Lista de Atendimentos')">Exportar PDF</button>
+  </div>
+</body>
+</html>

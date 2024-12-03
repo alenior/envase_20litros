@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/scripts.js" defer></script>
+</head>
+<body>
+  <header>Envase 20 Litros</header>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="atendimentos.html">Atendimentos</a>
+    <a href="cadastro.html">Novo Cadastro</a>
+  </nav>
+  <div class="container">
+    <h1>Clientes</h1>
+    <input type="text" id="filtroCliente" placeholder="Filtrar por nome" onkeyup="filtrarClientes()">
+    <table id="tabelaClientes">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Endereço</th>
+          <th>Contato</th>
+          <th>Observações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados carregados dinamicamente -->
+      </tbody>
+    </table>
+    <button onclick="exportarPDF('tabelaClientes', 'Lista de Clientes')">Exportar PDF</button>
+  </div>
+</body>
+</html>

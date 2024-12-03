@@ -5,13 +5,13 @@ import '../../services/database_helper.dart';
 class ClienteFormScreen extends StatefulWidget {
   final Cliente? cliente;
 
-  ClienteFormScreen({this.cliente});
+  const ClienteFormScreen({super.key, this.cliente});
 
   @override
-  _ClienteFormScreenState createState() => _ClienteFormScreenState();
+  ClienteFormScreenState createState() => ClienteFormScreenState();
 }
 
-class _ClienteFormScreenState extends State<ClienteFormScreen> {
+class ClienteFormScreenState extends State<ClienteFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _nome, _endereco, _contato, _observacoes;
 
@@ -43,7 +43,9 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
         );
       }
       await conn.close();
-      Navigator.pop(context);
+      if(mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 

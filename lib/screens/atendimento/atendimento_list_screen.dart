@@ -3,11 +3,13 @@ import '../../models/atendimento.dart';
 import '../../services/database_helper.dart';
 
 class AtendimentoListScreen extends StatefulWidget {
+  const AtendimentoListScreen({super.key});
+
   @override
-  _AtendimentoListScreenState createState() => _AtendimentoListScreenState();
+  AtendimentoListScreenState createState() => AtendimentoListScreenState();
 }
 
-class _AtendimentoListScreenState extends State<AtendimentoListScreen> {
+class AtendimentoListScreenState extends State<AtendimentoListScreen> {
   List<Atendimento> _atendimentos = [];
   String _searchDate = '';
   String _searchName = '';
