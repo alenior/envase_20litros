@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import '../../models/cliente.dart';
 import '../../services/database_helper.dart';
 
@@ -14,6 +15,7 @@ class ClienteFormScreen extends StatefulWidget {
 class ClienteFormScreenState extends State<ClienteFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _nome, _endereco, _contato, _observacoes;
+  final Logger logger = Logger();
 
   @override
   void initState() {
@@ -24,30 +26,43 @@ class ClienteFormScreenState extends State<ClienteFormScreen> {
     _observacoes = widget.cliente?.observacoes ?? '';
   }
 
-  Future<void> _saveCliente() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+Future<void> _saveCliente() async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
+    try {
       final conn = await DatabaseHelper.connect();
+      logger.i('Conexão com o banco de dados estabelecida.');
 
       if (widget.cliente == null) {
         // Inserção
-        await conn.query(
-          'INSERT INTO clientes (nome, endereco, contato, observacoes) VALUES (?, ?, ?, ?)',
-          [_nome, _endereco, _contato, _observacoes],
-        );
+        logger.i('Inserindo cliente: Nome=$_nome, Endereço=$_endereco, Contato=$_contato, Observações=$_observacoes');
+        try {
+          await conn.query(
+            'INSERT INTO clientes (nome, endereco, contato, observacoes) VALUES (?, ?, ?, ?)',
+            [_nome, _endereco, _contato, _observacoes],
+          );
+        } catch (e, stacktrace) {
+          logger.e('Erro ao executar query', e, stacktrace);
+        }
+
       } else {
         // Atualização
+        logger.i('Atualizando cliente ID=${widget.cliente!.id}');
         await conn.query(
           'UPDATE clientes SET nome = ?, endereco = ?, contato = ?, observacoes = ? WHERE id = ?',
           [_nome, _endereco, _contato, _observacoes, widget.cliente!.id],
         );
       }
       await conn.close();
-      if(mounted) {
+      logger.i('Operação realizada com sucesso.');
+      if (mounted) {
         Navigator.pop(context);
       }
+    } catch (e) {
+      logger.i('Erro ao salvar cliente: $e');
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
