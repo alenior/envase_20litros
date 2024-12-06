@@ -38,7 +38,7 @@ Future<void> _saveCliente() async {
         logger.i('Inserindo cliente: Nome=$_nome, Endereço=$_endereco, Contato=$_contato, Observações=$_observacoes');
         try {
           await conn.query(
-            'INSERT INTO clientes (nome, endereco, contato, observacoes) VALUES (?, ?, ?, ?)',
+            'INSERT INTO clientes (nome, endereco, contato, observacoes) VALUES ("?", "?", "?", "?")',
             [_nome, _endereco, _contato, _observacoes],
           );
         } catch (e, stacktrace) {
