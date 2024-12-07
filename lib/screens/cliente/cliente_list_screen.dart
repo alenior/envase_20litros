@@ -16,17 +16,42 @@ class ClienteListScreenState extends State<ClienteListScreen> {
   bool _isLoading = true;
   final TextEditingController _searchController = TextEditingController();
 
+  /// Função para buscar clientes do banco de dados
   Future<void> _fetchClientes() async {
-    final conn = await DatabaseHelper.connect();
-    final results = await conn.query('SELECT * FROM clientes ORDER BY nome');
-    setState(() {
-      _clientes = results.map((row) => Cliente.fromMap(row.fields)).toList();
-      _filteredClientes = _clientes;
-      _isLoading = false;
-    });
-    await conn.close();
+    try {
+      final conn = await DatabaseHelper.connect();
+      final results = await conn.query('SELECT * FROM clientes ORDER BY nome');
+      /*setState(() {
+        _clientes = results.map((row) => Cliente.fromMap(row.fields)).toList();
+        _filteredClientes = _clientes;
+        _isLoading = false;
+      });*/
+      setState(() {
+  // Exibindo os dados crus retornados pela consulta
+  debugPrint('🔍 Dados crus retornados: ${results.map((row) => row.fields).toList()}');
+
+  // Convertendo os dados para o modelo Cliente
+  _clientes = results.map((row) => Cliente.fromMap(row.fields)).toList();
+  
+  // Atualizando a lista filtrada
+  _filteredClientes = _clientes;
+
+  // Concluindo o carregamento
+  _isLoading = false;
+});
+      await conn.close();
+
+      if (_clientes.isEmpty) {
+        debugPrint('🔍 Nenhum cliente encontrado no banco de dados.');
+      } else {
+        debugPrint('🔍 Clientes recuperados: ${_clientes.length}');
+      }
+    } catch (e) {
+      debugPrint('❌ Erro ao buscar clientes: $e');
+    }
   }
 
+  /// Função para filtrar os clientes pela pesquisa
   void _filterClientes(String query) {
     final filtered = _clientes.where((cliente) {
       final nomeLower = cliente.nome.toLowerCase();
@@ -34,6 +59,7 @@ class ClienteListScreenState extends State<ClienteListScreen> {
       final searchLower = query.toLowerCase();
       return nomeLower.contains(searchLower) || enderecoLower.contains(searchLower);
     }).toList();
+
     setState(() {
       _filteredClientes = filtered;
     });
@@ -117,7 +143,8 @@ class ClienteListScreenState extends State<ClienteListScreen> {
                             title: Text(cliente.nome),
                             subtitle: Text(cliente.endereco),
                             onTap: () {
-                              // Aqui pode-se adicionar navegação para detalhes ou edição
+                              debugPrint('Cliente selecionado: ${cliente.nome}');
+                              // Adicionar funcionalidade de edição ou detalhes, se necessário
                             },
                           );
                         },

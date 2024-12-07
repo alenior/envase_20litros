@@ -26,43 +26,72 @@ class ClienteFormScreenState extends State<ClienteFormScreen> {
     _observacoes = widget.cliente?.observacoes ?? '';
   }
 
-Future<void> _saveCliente() async {
-  if (_formKey.currentState!.validate()) {
-    _formKey.currentState!.save();
-    try {
-      final conn = await DatabaseHelper.connect();
-      logger.i('Conexão com o banco de dados estabelecida.');
+  /// Substitui placeholders nomeados na query com os valores correspondentes.
+  String _replaceNamedPlaceholders(String query, Map<String, dynamic> params) {
+    params.forEach((key, value) {
+      final escapedValue = value != null ? "'$value'" : "NULL";
+      query = query.replaceAll(':$key', escapedValue);
+    });
+    return query;
+  }
 
-      if (widget.cliente == null) {
-        // Inserção
-        logger.i('Inserindo cliente: Nome=$_nome, Endereço=$_endereco, Contato=$_contato, Observações=$_observacoes');
-        try {
-          await conn.query(
-            'INSERT INTO clientes (nome, endereco, contato, observacoes) VALUES ("?", "?", "?", "?")',
-            [_nome, _endereco, _contato, _observacoes],
-          );
-        } catch (e, stacktrace) {
-          logger.e('Erro ao executar query', e, stacktrace);
+  Future<void> _saveCliente() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      try {
+        final conn = await DatabaseHelper.connect();
+        logger.i('Conexão com o banco de dados estabelecida.');
+
+        if (widget.cliente == null) {
+          // Inserção
+          logger.i('Inserindo cliente: Nome=$_nome, Endereço=$_endereco, Contato=$_contato, Observações=$_observacoes');
+
+          final query = '''
+            INSERT INTO clientes (nome, endereco, contato, observacoes) 
+            VALUES (:nome, :endereco, :contato, :observacoes)
+          ''';
+          final params = {
+            'nome': _nome,
+            'endereco': _endereco,
+            'contato': _contato,
+            'observacoes': _observacoes,
+          };
+
+          final formattedQuery = _replaceNamedPlaceholders(query, params);
+          logger.i('Query formatada: $formattedQuery');
+          await conn.query(formattedQuery);
+        } else {
+          // Atualização
+          logger.i('Atualizando cliente ID=${widget.cliente!.id}');
+
+          final query = '''
+            UPDATE clientes 
+            SET nome = :nome, endereco = :endereco, contato = :contato, observacoes = :observacoes 
+            WHERE id = :id
+          ''';
+          final params = {
+            'nome': _nome,
+            'endereco': _endereco,
+            'contato': _contato,
+            'observacoes': _observacoes,
+            'id': widget.cliente!.id,
+          };
+
+          final formattedQuery = _replaceNamedPlaceholders(query, params);
+          logger.i('Query formatada: $formattedQuery');
+          await conn.query(formattedQuery);
         }
 
-      } else {
-        // Atualização
-        logger.i('Atualizando cliente ID=${widget.cliente!.id}');
-        await conn.query(
-          'UPDATE clientes SET nome = ?, endereco = ?, contato = ?, observacoes = ? WHERE id = ?',
-          [_nome, _endereco, _contato, _observacoes, widget.cliente!.id],
-        );
+        await conn.close();
+        logger.i('Operação realizada com sucesso.');
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        logger.e('Erro ao salvar cliente: $e');
       }
-      await conn.close();
-      logger.i('Operação realizada com sucesso.');
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      logger.i('Erro ao salvar cliente: $e');
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
