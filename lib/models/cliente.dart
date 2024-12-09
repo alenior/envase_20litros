@@ -5,8 +5,15 @@ class Cliente {
   final String contato;
   final String observacoes;
 
-  Cliente({this.id, required this.nome, this.endereco = '', this.contato = '', this.observacoes = ''});
+  Cliente({
+    this.id,
+    required this.nome,
+    this.endereco = '',
+    this.contato = '',
+    this.observacoes = '',
+  });
 
+  /// Cria um objeto Cliente a partir de um Map
   factory Cliente.fromMap(Map<String, dynamic> map) {
     return Cliente(
       id: map['id'],
@@ -17,6 +24,7 @@ class Cliente {
     );
   }
 
+  /// Converte um objeto Cliente para um Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,

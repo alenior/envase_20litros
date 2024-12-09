@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/database_helper.dart';
 import '../../models/cliente.dart';
-import 'cliente_form_screen.dart'; // Tela para cadastro e edição de clientes
+import 'cliente_form_screen.dart';
 
 class ClienteListScreen extends StatefulWidget {
   const ClienteListScreen({super.key});
@@ -20,34 +20,33 @@ class ClienteListScreenState extends State<ClienteListScreen> {
   Future<void> _fetchClientes() async {
     try {
       final conn = await DatabaseHelper.connect();
-      final results = await conn.query('SELECT * FROM clientes ORDER BY nome');
-      /*setState(() {
-        _clientes = results.map((row) => Cliente.fromMap(row.fields)).toList();
+      debugPrint('🔍 Conexão com o banco estabelecida.');
+
+      final results = await conn.query(
+        'SELECT id, nome, endereco, contato, observacoes FROM clientes ORDER BY nome',
+      );
+
+      debugPrint('🔍 Dados crus retornados: ${results.map((row) => row.fields).toList()}');
+
+      setState(() {
+        _clientes = results.map((row) {
+          return Cliente(
+            id: row['id'],
+            nome: row['nome'],
+            endereco: row['endereco'] ?? '',
+            contato: row['contato'] ?? '',
+            observacoes: row['observacoes'] ?? '',
+          );
+        }).toList();
         _filteredClientes = _clientes;
         _isLoading = false;
-      });*/
-      setState(() {
-  // Exibindo os dados crus retornados pela consulta
-  debugPrint('🔍 Dados crus retornados: ${results.map((row) => row.fields).toList()}');
+      });
 
-  // Convertendo os dados para o modelo Cliente
-  _clientes = results.map((row) => Cliente.fromMap(row.fields)).toList();
-  
-  // Atualizando a lista filtrada
-  _filteredClientes = _clientes;
-
-  // Concluindo o carregamento
-  _isLoading = false;
-});
+      debugPrint('✅ Total de clientes recuperados: ${_clientes.length}');
       await conn.close();
-
-      if (_clientes.isEmpty) {
-        debugPrint('🔍 Nenhum cliente encontrado no banco de dados.');
-      } else {
-        debugPrint('🔍 Clientes recuperados: ${_clientes.length}');
-      }
-    } catch (e) {
+    } catch (e, stacktrace) {
       debugPrint('❌ Erro ao buscar clientes: $e');
+      debugPrint('🛠️ Stacktrace: $stacktrace');
     }
   }
 
@@ -129,10 +128,27 @@ class ClienteListScreenState extends State<ClienteListScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _filteredClientes.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'Nenhum cliente cadastrado.',
-                          style: TextStyle(fontSize: 18),
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Nenhum cliente cadastrado.',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ClienteFormScreen(),
+                                  ),
+                                ).then((_) => _fetchClientes());
+                              },
+                              child: const Text('Cadastrar Cliente'),
+                            ),
+                          ],
                         ),
                       )
                     : ListView.builder(
@@ -144,7 +160,6 @@ class ClienteListScreenState extends State<ClienteListScreen> {
                             subtitle: Text(cliente.endereco),
                             onTap: () {
                               debugPrint('Cliente selecionado: ${cliente.nome}');
-                              // Adicionar funcionalidade de edição ou detalhes, se necessário
                             },
                           );
                         },
